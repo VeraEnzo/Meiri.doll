@@ -1,0 +1,166 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ContactSection from '../components/ContactSection.astro';
+import Footer from '../components/Footer.astro';
+
+const productos = [
+  {
+    name: 'Princess Hoodie',
+    description: 'Campera con manga globo y cierre delantero. Tres botones con forma de flor como detalle central. Tela suave y resistente — pensada para sentirte linda y cómoda al mismo tiempo.',
+    images: [
+      '/assets/productos/princess-hoodie-3.jpg',
+      '/assets/productos/princess-hoodie-4.jpg',
+      '/assets/productos/princess-hoodie-1.jpg',
+      '/assets/productos/princess-hoodie-2.jpg',
+    ],
+    tags: ['nueva colección', 'manga globo', 'botones flor'],
+  },
+];
+---
+
+<Layout title="meiri doll — indumentaria femenina" description="Indumentaria femenina argentina con estética shoujo y coquette, inspirada en la moda asiática.">
+  <Header />
+
+  <!-- Hero -->
+  <section class="relative bg-[#fff1b5] overflow-hidden">
+    <div class="max-w-5xl mx-auto px-6 py-20 md:py-28 flex flex-col md:flex-row items-center gap-12">
+
+      <!-- Texto -->
+      <div class="flex-1 text-center md:text-left">
+        <p class="text-xs tracking-[0.3em] uppercase text-[#9b1734]/60 mb-4">nueva colección</p>
+        <h1 class="font-meiri text-6xl md:text-8xl text-[#9b1734] leading-none mb-6">
+          meiri<br/>doll
+        </h1>
+        <p class="text-[#9b1734]/70 text-base leading-relaxed max-w-sm mb-8">
+          Ropa pensada para el cuarto, para la calle, para vos.
+          Detalles románticos, telas suaves y estética que se siente.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+          <a
+            href="#coleccion"
+            class="bg-[#9b1734] text-[#fff1b5] px-7 py-3 rounded-full text-sm tracking-wide hover:bg-[#7a1028] transition-colors"
+          >
+            ver colección
+          </a>
+          <a
+            href="https://www.instagram.com/meiri.doll/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="border border-[#9b1734]/40 text-[#9b1734] px-7 py-3 rounded-full text-sm tracking-wide hover:border-[#9b1734] transition-colors"
+          >
+            @meiri.doll
+          </a>
+        </div>
+      </div>
+
+      <!-- Logo decorativo -->
+      <div class="flex-1 flex justify-center items-center">
+        <div class="relative">
+          <img
+            src="/assets/logos/logo-vanilla-bg.png"
+            alt="meiri doll"
+            class="w-64 md:w-80 object-contain drop-shadow-sm"
+          />
+          <img
+            src="/assets/svg/doll-rose.svg"
+            alt=""
+            class="absolute -top-6 -right-6 w-20 opacity-50 animate-float"
+          />
+          <img
+            src="/assets/svg/doll-blue.svg"
+            alt=""
+            class="absolute -bottom-6 -left-6 w-16 opacity-40 animate-float-delayed"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Ola decorativa -->
+    <div class="absolute bottom-0 left-0 right-0 overflow-hidden leading-none">
+      <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" class="w-full">
+        <path d="M0,20 C360,40 1080,0 1440,20 L1440,40 L0,40 Z" fill="#fffaf0"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Franja de características -->
+  <section class="bg-[#fffaf0] py-8 px-6 border-y border-[#f3aebc]/30">
+    <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-8 text-center">
+      {[
+        { icon: '🌸', text: 'botones con forma de flor' },
+        { icon: '🎀', text: 'detalles románticos' },
+        { icon: '💌', text: 'hecho en buenos aires' },
+        { icon: '✨', text: 'estética shoujo & coquette' },
+      ].map(item => (
+        <div class="flex items-center gap-2 text-[#9b1734]/70 text-sm">
+          <span class="text-base">{item.icon}</span>
+          <span class="tracking-wide">{item.text}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Colección -->
+  <section id="coleccion" class="py-20 px-6 bg-[#fffaf0]">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-14">
+        <p class="text-xs tracking-[0.3em] uppercase text-[#9b1734]/50 mb-3">lo que tenemos</p>
+        <h2 class="font-meiri text-5xl text-[#9b1734]">colección</h2>
+        <div class="flex justify-center mt-4">
+          <img src="/assets/simbolo/boton.svg" alt="" class="w-5 h-5 opacity-30" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+        {productos.map(producto => (
+          <ProductCard
+            name={producto.name}
+            description={producto.description}
+            images={producto.images}
+            tags={producto.tags}
+          />
+        ))}
+      </div>
+
+      <!-- Más próximamente -->
+      <div class="mt-16 text-center">
+        <div class="inline-block border border-[#f3aebc] rounded-3xl px-10 py-8 bg-white/60">
+          <img src="/assets/svg/doll-vanilla.svg" alt="" class="w-16 h-16 mx-auto mb-4 opacity-60" />
+          <p class="font-meiri text-2xl text-[#9b1734] mb-2">más prendas en camino</p>
+          <p class="text-sm text-[#9b1734]/60 mb-4">seguinos en Instagram para enterarte primero</p>
+          <a
+            href="https://www.instagram.com/meiri.doll/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[#9b1734] text-sm underline underline-offset-4 hover:opacity-60 transition-opacity"
+          >
+            @meiri.doll
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <ContactSection />
+  <Footer />
+</Layout>
+
+<style>
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(-3deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+  }
+  @keyframes float-delayed {
+    0%, 100% { transform: translateY(0px) rotate(3deg); }
+    50% { transform: translateY(-8px) rotate(-3deg); }
+  }
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+  .animate-float-delayed {
+    animation: float-delayed 5s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+</style>

@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'MeiriDoll';
+  src: url('/fonts/MeiriDoll-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-vanilla: #fff1b5;
+  --color-vanilla-dark: #f5e49a;
+  --color-baby-blue: #8dd2ef;
+  --color-dusty-rose: #f3aebc;
+  --color-bordo: #9b1734;
+  --color-cream: #fffaf0;
+
+  --font-meiri: 'MeiriDoll', cursive;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-bordo);
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.font-meiri {
+  font-family: var(--font-meiri);
+}
+
+/* Scrollbar suave acorde a la marca */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-vanilla);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-dusty-rose);
+  border-radius: 10px;
+}

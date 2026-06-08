@@ -1,0 +1,102 @@
+---
+interface Props {
+  name: string;
+  description: string;
+  images: string[];
+  tags?: string[];
+}
+
+const { name, description, images, tags = [] } = Astro.props;
+---
+
+<div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-[#f3aebc]/30">
+  <!-- Image carousel -->
+  <div class="relative overflow-hidden bg-[#fff1b5]/30">
+    <div class="carousel-track flex transition-transform duration-500 ease-in-out" data-current="0">
+      {images.map((src, i) => (
+        <img
+          src={src}
+          alt={`${name} - foto ${i + 1}`}
+          class="w-full flex-shrink-0 object-cover aspect-[3/4]"
+          loading={i === 0 ? 'eager' : 'lazy'}
+        />
+      ))}
+    </div>
+
+    {images.length > 1 && (
+      <>
+        <button
+          class="carousel-prev absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#9b1734] rounded-full w-8 h-8 flex items-center justify-center shadow transition-all opacity-0 group-hover:opacity-100"
+          aria-label="Foto anterior"
+        >
+          ‹
+        </button>
+        <button
+          class="carousel-next absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#9b1734] rounded-full w-8 h-8 flex items-center justify-center shadow transition-all opacity-0 group-hover:opacity-100"
+          aria-label="Siguiente foto"
+        >
+          ›
+        </button>
+
+        <!-- Dots -->
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+          {images.map((_, i) => (
+            <button
+              class={`carousel-dot w-1.5 h-1.5 rounded-full transition-all ${i === 0 ? 'bg-[#9b1734] w-3' : 'bg-[#9b1734]/40'}`}
+              data-index={i}
+              aria-label={`Ir a foto ${i + 1}`}
+            />
+          ))}
+        </div>
+      </>
+    )}
+  </div>
+
+  <!-- Info -->
+  <div class="p-5">
+    {tags.length > 0 && (
+      <div class="flex flex-wrap gap-1.5 mb-3">
+        {tags.map(tag => (
+          <span class="text-[10px] tracking-widest uppercase bg-[#f3aebc]/30 text-[#9b1734] px-2 py-0.5 rounded-full">
+            {tag}
+          </span>
+        ))}
+      </div>
+    )}
+
+    <h3 class="font-meiri text-2xl text-[#9b1734] mb-2">{name}</h3>
+    <p class="text-sm text-[#9b1734]/70 leading-relaxed mb-4">{description}</p>
+
+    <a
+      href="#contacto"
+      class="inline-flex items-center gap-2 bg-[#9b1734] text-[#fff1b5] text-sm px-5 py-2.5 rounded-full hover:bg-[#7a1028] transition-colors w-full justify-center"
+    >
+      <img src="/assets/simbolo/boton.svg" alt="" class="w-4 h-4 invert brightness-200" />
+      consultar por este producto
+    </a>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.group').forEach(card => {
+    const track = card.querySelector('.carousel-track') as HTMLElement;
+    const dots = card.querySelectorAll('.carousel-dot') as NodeListOf<HTMLElement>;
+    const total = track ? track.children.length : 0;
+    let current = 0;
+
+    function goTo(index: number) {
+      current = (index + total) % total;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('bg-[#9b1734]', i === current);
+        dot.classList.toggle('w-3', i === current);
+        dot.classList.toggle('bg-[#9b1734]/40', i !== current);
+        dot.classList.toggle('w-1.5', i !== current);
+      });
+    }
+
+    card.querySelector('.carousel-prev')?.addEventListener('click', () => goTo(current - 1));
+    card.querySelector('.carousel-next')?.addEventListener('click', () => goTo(current + 1));
+    dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+  });
+</script>
