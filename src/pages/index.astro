@@ -63,15 +63,17 @@ const productos = [
             alt="meiri doll"
             class="w-64 md:w-80 object-contain drop-shadow-sm"
           />
+          <!-- doll bordó: contraste fuerte sobre fondo amarillo -->
           <img
-            src="/assets/svg/doll-rose.svg"
+            src="/assets/svg/doll-bordo.svg"
             alt=""
-            class="absolute -top-6 -right-6 w-20 opacity-50 animate-float"
+            class="absolute -top-6 -right-6 w-20 opacity-70 animate-float"
           />
+          <!-- doll celeste: también contrasta bien sobre amarillo -->
           <img
             src="/assets/svg/doll-blue.svg"
             alt=""
-            class="absolute -bottom-6 -left-6 w-16 opacity-40 animate-float-delayed"
+            class="absolute -bottom-6 -left-6 w-16 opacity-75 animate-float-delayed"
           />
         </div>
       </div>
@@ -91,7 +93,7 @@ const productos = [
       {[
         { icon: '🌸', text: 'botones con forma de flor' },
         { icon: '🎀', text: 'detalles románticos' },
-        { icon: '💌', text: 'hecho en buenos aires' },
+        { icon: '💌', text: 'hecho en rosario' },
         { icon: '✨', text: 'estética shoujo & coquette' },
       ].map(item => (
         <div class="flex items-center gap-2 text-[#9b1734]/70 text-sm">
@@ -109,7 +111,7 @@ const productos = [
         <p class="text-xs tracking-[0.3em] uppercase text-[#9b1734]/50 mb-3">lo que tenemos</p>
         <h2 class="font-meiri text-5xl text-[#9b1734]">colección</h2>
         <div class="flex justify-center mt-4">
-          <img src="/assets/simbolo/boton.svg" alt="" class="w-5 h-5 opacity-30" />
+          <img src="/assets/simbolo/boton.svg" alt="" class="w-5 h-5 opacity-60" />
         </div>
       </div>
 
@@ -127,7 +129,8 @@ const productos = [
       <!-- Más próximamente -->
       <div class="mt-16 text-center">
         <div class="inline-block border border-[#f3aebc] rounded-3xl px-10 py-8 bg-white/60">
-          <img src="/assets/svg/doll-vanilla.svg" alt="" class="w-16 h-16 mx-auto mb-4 opacity-60" />
+          <!-- doll bordó sobre fondo blanco/crema: contraste claro -->
+          <img src="/assets/svg/doll-bordo.svg" alt="" class="w-16 h-16 mx-auto mb-4 opacity-70" />
           <p class="font-meiri text-2xl text-[#9b1734] mb-2">más prendas en camino</p>
           <p class="text-sm text-[#9b1734]/60 mb-4">seguinos en Instagram para enterarte primero</p>
           <a
