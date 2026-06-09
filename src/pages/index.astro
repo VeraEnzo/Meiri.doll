@@ -31,7 +31,6 @@ const productos = [
 
       <!-- Texto -->
       <div class="flex-1 text-center md:text-left">
-        <p class="text-xs tracking-[0.3em] uppercase text-[#9b1734]/60 mb-4">nueva colección</p>
         <h1 class="font-meiri text-6xl md:text-8xl text-[#9b1734] leading-none mb-6">
           meiri<br/>doll
         </h1>
@@ -87,28 +86,28 @@ const productos = [
   </section>
 
   <!-- Franja de características -->
-  <section class="bg-[#fffaf0] py-8 px-6 border-y border-[#f3aebc]/30">
-    <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 md:gap-10">
+  <section class="bg-[#fffaf0] py-6 px-6 border-y border-[#f3aebc]/30">
+    <div class="max-w-5xl mx-auto flex flex-wrap justify-center items-center gap-x-8 gap-y-3">
       {[
-        { icon: '🌸', text: 'pequeños detalles que hacen especial cada prenda' },
-        { icon: '🎀', text: 'inspiración romántica y femenina' },
+        { icon: '🌸', text: 'hecho con amor y detalle' },
+        { icon: '🎀', text: 'romántica y femenina' },
         { icon: '💌', text: 'confeccionado a mano' },
         { icon: '✨', text: '100% industria argentina' },
       ].map(item => (
-        <div class="flex items-center gap-2 text-[#9b1734]/70 text-sm max-w-[200px] text-center flex-col md:flex-row md:text-left md:max-w-none">
-          <span class="text-lg">{item.icon}</span>
-          <span class="tracking-wide leading-snug">{item.text}</span>
+        <div class="flex items-center gap-1.5 text-[#9b1734]/70 text-sm whitespace-nowrap">
+          <span>{item.icon}</span>
+          <span class="tracking-wide">{item.text}</span>
         </div>
       ))}
     </div>
   </section>
 
   <!-- Colección -->
-  <section id="coleccion" class="py-20 px-6 bg-[#fffaf0]">
+  <section id="coleccion" class="py-20 px-6 bg-[#fffaf0] scroll-mt-24">
     <div class="max-w-5xl mx-auto">
       <div class="text-center mb-14">
         <p class="text-xs tracking-[0.3em] uppercase text-[#9b1734]/50 mb-3">lo que tenemos</p>
-        <h2 class="font-meiri text-5xl text-[#9b1734]">colección</h2>
+        <h2 class="font-meiri text-5xl text-[#9b1734]">colección dear diary</h2>
         <div class="flex justify-center mt-4">
           <img src="/assets/simbolo/boton.svg" alt="" class="w-5 h-5 opacity-60" />
         </div>
