@@ -2,13 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import ProductCard from '../components/ProductCard.astro';
+import AboutSection from '../components/AboutSection.astro';
 import ContactSection from '../components/ContactSection.astro';
 import Footer from '../components/Footer.astro';
 
 const productos = [
   {
     name: 'Princess Hoodie',
-    description: 'Campera con manga globo y cierre delantero. Tres botones con forma de flor como detalle central. Tela suave y resistente — pensada para sentirte linda y cómoda al mismo tiempo.',
+    description: 'Campera con manga globo y cierre delantero. Hecho en frisa invisible — pensada para sentirte linda y calentita al mismo tiempo.\n\nMaterial: 80% Algodón, 20% Polyester\nEl detalle de los botones y cierre puede cambiar según disponibilidad.\nColores disponibles: Parfait Pink',
     images: [
       '/assets/productos/princess-hoodie-3.jpg',
       '/assets/productos/princess-hoodie-4.jpg',
@@ -16,11 +17,12 @@ const productos = [
       '/assets/productos/princess-hoodie-2.jpg',
     ],
     tags: ['nueva colección', 'manga globo', 'botones flor'],
+    price: '$50.000',
   },
 ];
 ---
 
-<Layout title="meiri doll — indumentaria femenina" description="Indumentaria femenina argentina con estética shoujo y coquette, inspirada en la moda asiática.">
+<Layout title="meiri doll — indumentaria femenina" description="Una pequeña marca independiente inspirada en la dulzura de las pequeñas cosas, para quienes disfrutan las cosas hechas con cariño.">
   <Header />
 
   <!-- Hero -->
@@ -34,8 +36,7 @@ const productos = [
           meiri<br/>doll
         </h1>
         <p class="text-[#9b1734]/70 text-base leading-relaxed max-w-sm mb-8">
-          Ropa pensada para el cuarto, para la calle, para vos.
-          Detalles románticos, telas suaves y estética que se siente.
+          Una pequeña marca independiente inspirada en la dulzura de las pequeñas cosas, para quienes disfrutan las cosas hechas con cariño.
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
           <a
@@ -63,13 +64,11 @@ const productos = [
             alt="meiri doll"
             class="w-64 md:w-80 object-contain drop-shadow-sm"
           />
-          <!-- doll bordó: contraste fuerte sobre fondo amarillo -->
           <img
             src="/assets/svg/doll-bordo.svg"
             alt=""
             class="absolute -top-6 -right-6 w-20 opacity-70 animate-float"
           />
-          <!-- doll celeste: también contrasta bien sobre amarillo -->
           <img
             src="/assets/svg/doll-blue.svg"
             alt=""
@@ -89,16 +88,16 @@ const productos = [
 
   <!-- Franja de características -->
   <section class="bg-[#fffaf0] py-8 px-6 border-y border-[#f3aebc]/30">
-    <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-8 text-center">
+    <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 md:gap-10">
       {[
-        { icon: '🌸', text: 'botones con forma de flor' },
-        { icon: '🎀', text: 'detalles románticos' },
-        { icon: '💌', text: 'hecho en rosario' },
-        { icon: '✨', text: 'estética shoujo & coquette' },
+        { icon: '🌸', text: 'pequeños detalles que hacen especial cada prenda' },
+        { icon: '🎀', text: 'inspiración romántica y femenina' },
+        { icon: '💌', text: 'confeccionado a mano' },
+        { icon: '✨', text: '100% industria argentina' },
       ].map(item => (
-        <div class="flex items-center gap-2 text-[#9b1734]/70 text-sm">
-          <span class="text-base">{item.icon}</span>
-          <span class="tracking-wide">{item.text}</span>
+        <div class="flex items-center gap-2 text-[#9b1734]/70 text-sm max-w-[200px] text-center flex-col md:flex-row md:text-left md:max-w-none">
+          <span class="text-lg">{item.icon}</span>
+          <span class="tracking-wide leading-snug">{item.text}</span>
         </div>
       ))}
     </div>
@@ -122,6 +121,7 @@ const productos = [
             description={producto.description}
             images={producto.images}
             tags={producto.tags}
+            price={producto.price}
           />
         ))}
       </div>
@@ -129,7 +129,6 @@ const productos = [
       <!-- Más próximamente -->
       <div class="mt-16 text-center">
         <div class="inline-block border border-[#f3aebc] rounded-3xl px-10 py-8 bg-white/60">
-          <!-- doll bordó sobre fondo blanco/crema: contraste claro -->
           <img src="/assets/svg/doll-bordo.svg" alt="" class="w-16 h-16 mx-auto mb-4 opacity-70" />
           <p class="font-meiri text-2xl text-[#9b1734] mb-2">más prendas en camino</p>
           <p class="text-sm text-[#9b1734]/60 mb-4">seguinos en Instagram para enterarte primero</p>
@@ -146,6 +145,7 @@ const productos = [
     </div>
   </section>
 
+  <AboutSection />
   <ContactSection />
   <Footer />
 </Layout>

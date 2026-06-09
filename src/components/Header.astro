@@ -1,11 +1,9 @@
 ---
 ---
 
-<!-- Rosa de fondo: #f3aebd (extraído de JPG_3/JPG_4) — logo vainilla sobre rosa, texto bordó -->
 <header class="w-full bg-[#f3aebd] border-b border-[#9b1734]/15 sticky top-0 z-50">
   <div class="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
     <a href="/" class="flex items-center">
-      <!-- Logo vainilla sobre rosa: combinación exacta del JPG_3 -->
       <img
         src="/assets/logos/logo-rose-bordo-bg.png"
         alt="meiri doll"
@@ -16,6 +14,9 @@
     <nav class="hidden md:flex items-center gap-8">
       <a href="#coleccion" class="text-sm tracking-widest uppercase text-[#9b1734] hover:text-[#7a1028] transition-colors">
         colección
+      </a>
+      <a href="#sobre-meiri" class="text-sm tracking-widest uppercase text-[#9b1734] hover:text-[#7a1028] transition-colors">
+        sobre meiri
       </a>
       <a href="#contacto" class="text-sm tracking-widest uppercase text-[#9b1734] hover:text-[#7a1028] transition-colors">
         contacto
@@ -33,23 +34,29 @@
       </a>
     </nav>
 
-    <!-- Mobile menu button -->
+    <!-- Botón hamburguesa con animación -->
     <button
       id="menu-toggle"
-      class="md:hidden text-[#9b1734] p-2"
+      class="md:hidden text-[#9b1734] p-2 flex flex-col justify-center items-center gap-1.5 w-9 h-9"
       aria-label="Abrir menú"
+      aria-expanded="false"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
+      <span class="hamburger-line block w-5 h-0.5 bg-[#9b1734] rounded-full transition-all duration-300 origin-center"></span>
+      <span class="hamburger-line block w-5 h-0.5 bg-[#9b1734] rounded-full transition-all duration-300"></span>
+      <span class="hamburger-line block w-5 h-0.5 bg-[#9b1734] rounded-full transition-all duration-300 origin-center"></span>
     </button>
   </div>
 
-  <!-- Mobile menu -->
-  <div id="mobile-menu" class="hidden md:hidden bg-[#f0a0b8] border-t border-[#9b1734]/15 px-6 pb-4">
-    <nav class="flex flex-col gap-4 pt-4 text-[#9b1734]">
-      <a href="#coleccion" class="text-sm tracking-widest uppercase" id="mobile-coleccion">colección</a>
-      <a href="#contacto" class="text-sm tracking-widest uppercase" id="mobile-contacto">contacto</a>
+  <!-- Mobile menu con animación de apertura -->
+  <div
+    id="mobile-menu"
+    class="md:hidden bg-[#f3aebd] border-t border-[#9b1734]/15 px-6 overflow-hidden transition-all duration-300 ease-in-out"
+    style="max-height: 0; opacity: 0;"
+  >
+    <nav class="flex flex-col gap-4 py-5 text-[#9b1734]">
+      <a href="#coleccion" class="text-sm tracking-widest uppercase mobile-nav-link">colección</a>
+      <a href="#sobre-meiri" class="text-sm tracking-widest uppercase mobile-nav-link">sobre meiri</a>
+      <a href="#contacto" class="text-sm tracking-widest uppercase mobile-nav-link">contacto</a>
       <a
         href="https://www.instagram.com/meiri.doll/"
         target="_blank"
@@ -64,15 +71,36 @@
 
 <script>
   const toggle = document.getElementById('menu-toggle');
-  const menu = document.getElementById('mobile-menu');
+  const menu = document.getElementById('mobile-menu') as HTMLElement;
+  const lines = toggle?.querySelectorAll('.hamburger-line') as NodeListOf<HTMLElement>;
+  let isOpen = false;
+
+  function openMenu() {
+    isOpen = true;
+    menu.style.maxHeight = '300px';
+    menu.style.opacity = '1';
+    toggle?.setAttribute('aria-expanded', 'true');
+    // X: línea 1 rota arriba, línea 2 desaparece, línea 3 rota abajo
+    lines[0].style.transform = 'translateY(8px) rotate(45deg)';
+    lines[1].style.opacity = '0';
+    lines[2].style.transform = 'translateY(-8px) rotate(-45deg)';
+  }
+
+  function closeMenu() {
+    isOpen = false;
+    menu.style.maxHeight = '0';
+    menu.style.opacity = '0';
+    toggle?.setAttribute('aria-expanded', 'false');
+    lines[0].style.transform = '';
+    lines[1].style.opacity = '';
+    lines[2].style.transform = '';
+  }
 
   toggle?.addEventListener('click', () => {
-    menu?.classList.toggle('hidden');
+    isOpen ? closeMenu() : openMenu();
   });
 
-  ['mobile-coleccion', 'mobile-contacto'].forEach(id => {
-    document.getElementById(id)?.addEventListener('click', () => {
-      menu?.classList.add('hidden');
-    });
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', closeMenu);
   });
 </script>
