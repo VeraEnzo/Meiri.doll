@@ -10,9 +10,23 @@ backend:
   # Descomentar apuntando al Worker de Cloudflare:
   # base_url: https://TU-WORKER.workers.dev
 
-# Dónde se guardan las fotos subidas y con qué ruta se referencian en el sitio.
-media_folder: /public/assets/productos
-public_folder: /assets/productos
+# Las fotos van a src/assets/ (no a public/) para que Astro las optimice en el
+# build. Al estar fuera de public/ no tienen URL propia, así que se referencian
+# por su ruta en el repo y el sitio las resuelve con import.meta.glob.
+# Por eso media_folder y public_folder son iguales acá.
+media_folder: /src/assets/productos
+public_folder: /src/assets/productos
+
+media_libraries:
+  default:
+    config:
+      # Normaliza los nombres al subir: "Captura de pantalla 2026.png"
+      # queda como "captura-de-pantalla-2026.png". Evita espacios,
+      # mayúsculas y acentos en las URLs.
+      slugify_filename: true
+      # Tope de 8 MB por archivo, como red de contención ante subidas
+      # accidentales. Una foto de celular ronda los 2-4 MB.
+      max_file_size: 8388608
 
 collections:
   - name: productos

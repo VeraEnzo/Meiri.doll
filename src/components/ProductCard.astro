@@ -1,13 +1,24 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
 interface Props {
   name: string;
   description: string;
-  images: string[];
+  images: ImageMetadata[];
   tags?: string[];
   price?: string;
 }
 
 const { name, description, images, tags = [], price } = Astro.props;
+
+// La grilla es de hasta 3 columnas dentro de un contenedor de 1024px, así que
+// una card nunca supera ~320px en desktop. En mobile ocupa el ancho completo.
+// 960px cubre pantallas de hasta 3x de densidad; más grande que eso no aporta,
+// y el `width` explícito evita que Astro genere además una copia del original.
+const anchos = [320, 640, 960];
+const anchoMaximo = 960;
+const sizes = '(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw';
 ---
 
 <div class="product-card group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-[#f3aebc]/30">
@@ -15,9 +26,12 @@ const { name, description, images, tags = [], price } = Astro.props;
   <div class="relative overflow-hidden bg-[#fff1b5]/30">
     <div class="carousel-track flex transition-transform duration-500 ease-in-out">
       {images.map((src, i) => (
-        <img
+        <Image
           src={src}
           alt={`${name} - foto ${i + 1}`}
+          widths={anchos}
+          width={anchoMaximo}
+          sizes={sizes}
           class="w-full flex-shrink-0 object-cover aspect-[3/4] select-none"
           loading={i === 0 ? 'eager' : 'lazy'}
           draggable="false"

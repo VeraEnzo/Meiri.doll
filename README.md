@@ -61,9 +61,10 @@ website/
 │   └── assets/
 │       ├── logos/                    # Variantes del logo (PNG/JPG, todos los colores)
 │       ├── svg/                      # Ilustraciones decorativas (doll en 4 colores)
-│       ├── simbolo/                  # Ícono botón de flor
-│       └── productos/                # Fotos de productos
+│       └── simbolo/                  # Ícono botón de flor
 ├── src/
+│   ├── assets/
+│   │   └── productos/                # Fotos de productos (optimizadas en build)
 │   ├── components/
 │   │   ├── Header.astro              # Navegación sticky
 │   │   ├── ProductCard.astro         # Card con carrusel de fotos
@@ -74,6 +75,8 @@ website/
 │   ├── content.config.ts             # Schema de la colección de productos
 │   ├── layouts/
 │   │   └── Layout.astro              # Layout base con meta tags
+│   ├── lib/
+│   │   └── imagenes.ts               # Resuelve las rutas de fotos del YAML
 │   ├── pages/
 │   │   └── index.astro               # Página principal (hero + catálogo + contacto)
 │   └── styles/
@@ -154,7 +157,7 @@ El catálogo se edita desde **[meiridoll.vercel.app/admin](https://meiridoll.ver
 | URL                | `/admin`                                             |
 | CMS                | Sveltia CMS (compatible con Decap CMS)               |
 | Autenticación      | Cuenta de GitHub con permiso de escritura en el repo |
-| Dónde se guarda    | `src/content/productos/` y `public/assets/productos/` |
+| Dónde se guarda    | `src/content/productos/` y `src/assets/productos/`   |
 | Costo              | $0 — el sitio sigue siendo 100% estático             |
 
 > **Sobre la seguridad:** la página `/admin` es pública (es solo una pantalla de login), pero no sirve de nada sin una cuenta de GitHub con acceso de escritura al repositorio. No hay contraseñas guardadas en el sitio ni base de datos que atacar — el control de acceso lo maneja GitHub. Para dar de baja a alguien, se lo quita como colaborador del repo.
@@ -170,7 +173,9 @@ La segunda opción es la recomendada para uso cotidiano: cada persona entra con 
 
 ### Qué se puede editar
 
-Nombre, descripción, fotos (subir, borrar y reordenar arrastrando), etiquetas, precio y orden en la grilla. También crear y eliminar productos enteros. Las fotos subidas van automáticamente a `public/assets/productos/`.
+Nombre, descripción, fotos (subir, borrar y reordenar arrastrando), etiquetas, precio y orden en la grilla. También crear y eliminar productos enteros. Las fotos subidas van automáticamente a `src/assets/productos/`, con el nombre normalizado a minúsculas y guiones y un tope de 8 MB por archivo.
+
+> Sacar una foto de un producto **no borra el archivo del repositorio**: sigue ocupando lugar aunque ya no se muestre. Para eliminarlo del todo hay que borrarlo desde la biblioteca de medios del panel.
 
 ---
 
@@ -188,12 +193,12 @@ description: |-
   Material: 100% Algodón
   Colores disponibles: Parfait Pink
 images:
-  - /assets/productos/foto-1.jpg
-  - /assets/productos/foto-2.jpg
+  - /src/assets/productos/foto-1.jpg
+  - /src/assets/productos/foto-2.jpg
 tags:
   - etiqueta
   - otra etiqueta
-price: '$50.000'
+price: $50.000
 order: 1
 ```
 
@@ -205,20 +210,41 @@ Los campos están validados por un schema de Zod en `src/content.config.ts`: si 
 | ------------- | ---------- | ------------- | -------------------------------------------------------------- |
 | `name`        | `string`   | Sí            | Nombre de la prenda, se muestra en la card                      |
 | `description` | `string`   | Sí            | Texto descriptivo — los saltos de línea se respetan             |
-| `images`      | `string[]` | Sí            | Rutas a las fotos, mínimo una; con más de una se activa el carrusel |
+| `images`      | `string[]` | Sí            | Rutas a las fotos en `/src/assets/productos/`, mínimo una; con más de una se activa el carrusel |
 | `tags`        | `string[]` | No            | Etiquetas decorativas; si se omite, no se muestra ninguna       |
 | `price`       | `string`   | No            | Precio tal cual se ve; si se omite, la card no muestra precio   |
 | `order`       | `number`   | No (default 0)| Posición en la grilla — menor número aparece antes              |
 
-**Sobre `price`:** es un **string libre, no un número**. Se escribe exactamente como se quiere ver (`'$50.000'`), sin formateo automático de moneda ni separadores de miles. Conviene escribirlo entre comillas en el YAML para que el `$` no se malinterprete. Es opcional: si el producto no lo incluye, la card simplemente no renderiza el precio.
+**Sobre `price`:** es un **string libre, no un número**. Se escribe exactamente como se quiere ver (`$50.000`), sin formateo automático de moneda ni separadores de miles. Es opcional: si el producto no lo incluye, la card simplemente no renderiza el precio. En YAML no hace falta comillarlo — el `$` no tiene significado especial y se parsea como texto.
 
 **Sobre `description`:** los saltos de línea se respetan en la card (usa `whitespace-pre-line`), así que se pueden separar párrafos o listar detalles como material y colores disponibles. En YAML se escribe con el bloque `|-`, como en el ejemplo de arriba.
 
 **Sobre `order`:** cuando dos productos comparten el mismo número, se ordenan alfabéticamente por nombre.
 
-Las fotos van en `public/assets/productos/` (el panel las sube ahí solo).
+---
 
-> **Nota sobre el peso de las fotos:** hoy se sirven crudas con `<img>`, sin pasar por `astro:assets`. Las imágenes de 1.5–3 MB se descargan enteras. Migrarlas a `src/assets/` habilitaría la conversión automática a webp/avif en el build.
+## Cómo se optimizan las fotos
+
+Las fotos van en **`src/assets/productos/`**, no en `public/`. Esa distinción es la que habilita la optimización: Astro copia `public/` tal cual, pero todo lo que está en `src/` pasa por el pipeline de [`astro:assets`](https://docs.astro.build/en/guides/images/).
+
+En cada build, Astro convierte los JPG originales a **webp** en tres anchos (320, 640 y 960 px) y arma el `srcset` para que cada dispositivo baje solo el que necesita. Los archivos originales nunca llegan al sitio publicado.
+
+| Ancho servido | Peso del carrusel completo (4 fotos) |
+| ------------- | ------------------------------------- |
+| 320 px        | ~65 KB                                |
+| 640 px        | ~243 KB                               |
+| 960 px        | ~608 KB                               |
+| _originales_  | _8.15 MB_                             |
+
+Además la primera foto carga con `eager` y el resto con `lazy`, así que la carga inicial de la página es todavía menor.
+
+### El puente entre el YAML y las imágenes
+
+Como los archivos de `src/` no tienen URL pública, no se pueden referenciar con una ruta cualquiera: hay que importarlos. De eso se encarga `src/lib/imagenes.ts`, que indexa todas las fotos con `import.meta.glob` y traduce la ruta guardada en el YAML a la imagen importada que espera el componente `<Image>`.
+
+Consecuencia práctica: **las rutas del YAML tienen que coincidir exactamente con la ubicación real del archivo**, empezando por `/src/assets/productos/`. Si una ruta no existe, el build falla con un mensaje que lista las fotos disponibles, en vez de publicar una card con la imagen rota. El panel de administración escribe estas rutas solo, así que el problema aparece únicamente al editar los YAML a mano.
+
+> **Sobre el tamaño del repositorio:** los originales sin optimizar quedan versionados en git. Con un catálogo chico es irrelevante, pero conviene subir fotos ya recortadas y no de 10 MB — para eso está el tope de 8 MB del panel.
 
 ---
 
