@@ -1,0 +1,66 @@
+# Configuración del panel de administración (Sveltia CMS).
+# Formato compatible con Decap CMS: si algún día se cambia de CMS,
+# este archivo se reutiliza tal cual.
+
+backend:
+  name: github
+  repo: VeraEnzo/Meiri.doll
+  branch: main
+  # Fase 3 — acceso para Candela sin token personal.
+  # Descomentar apuntando al Worker de Cloudflare:
+  # base_url: https://TU-WORKER.workers.dev
+
+# Dónde se guardan las fotos subidas y con qué ruta se referencian en el sitio.
+media_folder: /public/assets/productos
+public_folder: /assets/productos
+
+collections:
+  - name: productos
+    label: Productos
+    label_singular: Producto
+    folder: /src/content/productos
+    extension: yml
+    format: yaml
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    summary: '{{name}}'
+    sortable_fields: [order, name]
+    fields:
+      - name: name
+        label: Nombre
+        widget: string
+
+      - name: description
+        label: Descripción
+        widget: text
+        hint: 'Los saltos de línea se respetan tal cual en la card.'
+
+      - name: images
+        label: Fotos
+        widget: list
+        min: 1
+        hint: 'La primera foto es la que se ve al cargar. Se pueden arrastrar para reordenar.'
+        field:
+          name: image
+          label: Foto
+          widget: image
+
+      - name: tags
+        label: Etiquetas
+        widget: list
+        required: false
+        hint: 'Opcional. Ej: hecho con frisa, manga globo.'
+
+      - name: price
+        label: Precio
+        widget: string
+        required: false
+        hint: 'Opcional, se muestra tal cual se escribe. Ej: $50.000'
+
+      - name: order
+        label: Orden
+        widget: number
+        value_type: int
+        default: 0
+        hint: 'Menor número = aparece antes en el catálogo.'
