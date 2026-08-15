@@ -5,21 +5,12 @@ import ProductCard from '../components/ProductCard.astro';
 import AboutSection from '../components/AboutSection.astro';
 import ContactSection from '../components/ContactSection.astro';
 import Footer from '../components/Footer.astro';
+import { getCollection } from 'astro:content';
 
-const productos = [
-  {
-    name: 'Princess Hoodie',
-    description: 'Campera con manga globo y cierre delantero. Hecho en frisa invisible — pensada para sentirte linda y calentita al mismo tiempo.\n\nMaterial: 80% Algodón, 20% Polyester\nEl detalle de los botones y cierre puede cambiar según disponibilidad.\nColores disponibles: Parfait Pink',
-    images: [
-      '/assets/productos/princess-hoodie-3.jpg',
-      '/assets/productos/princess-hoodie-4.jpg',
-      '/assets/productos/princess-hoodie-1.jpg',
-      '/assets/productos/princess-hoodie-2.jpg',
-    ],
-    tags: ['hecho con frisa', 'manga globo', 'detalle botones'],
-    price: '$50.000',
-  },
-];
+// Los productos viven en src/content/productos/ y se editan desde /admin.
+const productos = (await getCollection('productos')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name)
+);
 ---
 
 <Layout title="meiri doll — indumentaria femenina" description="Una pequeña marca independiente inspirada en la dulzura de las pequeñas cosas, para quienes disfrutan las prendes hechas con cariño.">
@@ -116,11 +107,11 @@ const productos = [
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
         {productos.map(producto => (
           <ProductCard
-            name={producto.name}
-            description={producto.description}
-            images={producto.images}
-            tags={producto.tags}
-            price={producto.price}
+            name={producto.data.name}
+            description={producto.data.description}
+            images={producto.data.images}
+            tags={producto.data.tags}
+            price={producto.data.price}
           />
         ))}
       </div>
