@@ -255,17 +255,22 @@ Los campos están validados por un schema de Zod en `src/content.config.ts`: si 
 | Campo         | Tipo       | ¿Obligatorio? | Detalle                                                        |
 | ------------- | ---------- | ------------- | -------------------------------------------------------------- |
 | `name`        | `string`   | Sí            | Nombre de la prenda, se muestra en la card                      |
-| `description` | `string`   | Sí            | Texto descriptivo — los saltos de línea se respetan             |
-| `images`      | `string[]` | Sí            | Rutas a las fotos en `/src/assets/productos/`, mínimo una; con más de una se activa el carrusel |
+| `description` | `string`   | No            | Texto descriptivo — los saltos de línea se respetan; si está vacío, la card no muestra párrafo |
+| `images`      | `string[]` | No            | Rutas a las fotos en `/src/assets/productos/`; con más de una se activa el carrusel. Sin fotos, la card muestra un placeholder |
 | `tags`        | `string[]` | No            | Etiquetas decorativas; si se omite, no se muestra ninguna       |
 | `price`       | `string`   | No            | Precio tal cual se ve; si se omite, la card no muestra precio   |
 | `order`       | `number`   | No (default 0)| Posición en la grilla — menor número aparece antes              |
+| `draft`       | `boolean`  | No (default false) | Si es `true`, el producto existe en el panel pero no sale publicado |
 
 **Sobre `price`:** es un **string libre, no un número**. Se escribe exactamente como se quiere ver (`$50.000`), sin formateo automático de moneda ni separadores de miles. Es opcional: si el producto no lo incluye, la card simplemente no renderiza el precio. En YAML no hace falta comillarlo — el `$` no tiene significado especial y se parsea como texto.
 
 **Sobre `description`:** los saltos de línea se respetan en la card (usa `whitespace-pre-line`), así que se pueden separar párrafos o listar detalles como material y colores disponibles. En YAML se escribe con el bloque `|-`, como en el ejemplo de arriba.
 
 **Sobre `order`:** cuando dos productos comparten el mismo número, se ordenan alfabéticamente por nombre.
+
+**Sobre `draft` y los productos a medio armar:** solo `name` es obligatorio, así que un producto puede existir con la descripción y las fotos vacías — la card muestra un placeholder con el ícono de la marca y la leyenda *"foto próximamente"* en vez de romperse. Eso permite reservar un lugar en la grilla antes de tener el material.
+
+Mientras el sitio está en beta esos productos incompletos salen publicados, que es lo buscado. Cuando el catálogo tenga visitas reales conviene invertir la lógica: poner `draft: true` en los productos a medio armar, y cambiar el `default` del campo `draft` en `public/admin/config.yml` a `true` para que los nuevos arranquen ocultos.
 
 ---
 

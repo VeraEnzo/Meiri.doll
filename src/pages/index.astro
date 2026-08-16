@@ -9,11 +9,12 @@ import { getCollection } from 'astro:content';
 import { resolverImagen } from '../lib/imagenes';
 
 // Los productos viven en src/content/productos/ y se editan desde /admin.
+// Los borradores existen en el panel pero no salen publicados.
 // Las rutas de las fotos se resuelven acá a imágenes importadas, para que
 // Astro las optimice en el build.
-const entradas = (await getCollection('productos')).sort(
-  (a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name)
-);
+const entradas = (await getCollection('productos'))
+  .filter(({ data }) => !data.draft)
+  .sort((a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name));
 
 const productos = await Promise.all(
   entradas.map(async ({ data }) => ({

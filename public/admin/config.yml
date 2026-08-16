@@ -43,6 +43,15 @@ collections:
     summary: '{{name}}'
     sortable_fields: [order, name]
     fields:
+      # Mientras el sitio está en beta los productos salen publicados aunque
+      # estén incompletos. Cuando empiece a tener visitas reales, cambiar el
+      # default a true para que los nuevos arranquen ocultos.
+      - name: draft
+        label: Borrador
+        widget: boolean
+        default: false
+        hint: 'Tildado = no se muestra en el sitio. Sirve para ir armando un producto sin publicarlo.'
+
       - name: name
         label: Nombre
         widget: string
@@ -50,13 +59,14 @@ collections:
       - name: description
         label: Descripción
         widget: text
-        hint: 'Los saltos de línea se respetan tal cual en la card.'
+        required: false
+        hint: 'Los saltos de línea se respetan tal cual en la card. Obligatoria para publicar.'
 
       - name: images
         label: Fotos
         widget: list
-        min: 1
-        hint: 'La primera foto es la que se ve al cargar. Se pueden arrastrar para reordenar.'
+        required: false
+        hint: 'La primera foto es la que se ve al cargar. Se pueden arrastrar para reordenar. Hace falta al menos una para publicar.'
         field:
           name: image
           label: Foto

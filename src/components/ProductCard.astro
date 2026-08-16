@@ -24,20 +24,30 @@ const sizes = '(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw';
 <div class="product-card group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-[#f3aebc]/30">
   <!-- Image carousel -->
   <div class="relative overflow-hidden bg-[#fff1b5]/30">
-    <div class="carousel-track flex transition-transform duration-500 ease-in-out">
-      {images.map((src, i) => (
-        <Image
-          src={src}
-          alt={`${name} - foto ${i + 1}`}
-          widths={anchos}
-          width={anchoMaximo}
-          sizes={sizes}
-          class="w-full flex-shrink-0 object-cover aspect-[3/4] select-none"
-          loading={i === 0 ? 'eager' : 'lazy'}
-          draggable="false"
-        />
-      ))}
-    </div>
+    {images.length > 0 ? (
+      <div class="carousel-track flex transition-transform duration-500 ease-in-out">
+        {images.map((src, i) => (
+          <Image
+            src={src}
+            alt={`${name} - foto ${i + 1}`}
+            widths={anchos}
+            width={anchoMaximo}
+            sizes={sizes}
+            class="w-full flex-shrink-0 object-cover aspect-[3/4] select-none"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            draggable="false"
+          />
+        ))}
+      </div>
+    ) : (
+      <!-- Producto todavía sin fotos: placeholder en vez de un hueco vacío -->
+      <div class="aspect-[3/4] flex flex-col items-center justify-center gap-3">
+        <img src="/assets/svg/doll-bordo.svg" alt="" class="w-14 h-14 opacity-30" />
+        <span class="text-[10px] tracking-widest uppercase text-[#9b1734]/40">
+          foto próximamente
+        </span>
+      </div>
+    )}
 
     {images.length > 1 && (
       <>
@@ -88,7 +98,9 @@ const sizes = '(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw';
       )}
     </div>
 
-    <p class="text-sm text-[#9b1734]/70 leading-relaxed mb-4 whitespace-pre-line">{description}</p>
+    {description && (
+      <p class="text-sm text-[#9b1734]/70 leading-relaxed mb-4 whitespace-pre-line">{description}</p>
+    )}
 
     <a
       href="#contacto"
