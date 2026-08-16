@@ -6,9 +6,11 @@ backend:
   name: github
   repo: VeraEnzo/Meiri.doll
   branch: main
-  # Fase 3 — acceso para Candela sin token personal.
-  # Descomentar apuntando al Worker de Cloudflare:
-  # base_url: https://TU-WORKER.workers.dev
+  # Proxy de autenticación (Cloudflare Workers). Habilita el login con cuenta
+  # de GitHub, sin token personal. GitHub todavía no permite completar el
+  # flujo OAuth desde el navegador, por eso hace falta esta pieza.
+  # Ver "Configurar el login con cuenta de GitHub" en el README.
+  base_url: https://sveltia-cms-auth.enzovera646.workers.dev
 
 # Las fotos van a src/assets/ (no a public/) para que Astro las optimice en el
 # build. Al estar fuera de public/ no tienen URL propia, así que se referencian

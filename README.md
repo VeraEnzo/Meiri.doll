@@ -166,10 +166,56 @@ El catálogo se edita desde **[meiridoll.vercel.app/admin](https://meiridoll.ver
 
 Hay dos formas de iniciar sesión:
 
-1. **Con token personal** — botón *Sign In with Token*. Se genera un [personal access token](https://github.com/settings/tokens) de GitHub con permiso sobre el repo y se pega. No requiere ninguna configuración extra, pero es incómodo para alguien no técnico.
-2. **Con la cuenta de GitHub** — requiere una OAuth App de GitHub y un proxy de autenticación desplegado en Cloudflare Workers ([Sveltia CMS Authenticator](https://github.com/sveltia/sveltia-cms-auth)). Una vez configurado, se descomenta `base_url` en `public/admin/config.yml`.
+1. **Con token personal** — botón *Sign In with Token*. Se genera un [personal access token](https://github.com/settings/personal-access-tokens/new) de GitHub con permiso `Contents: read and write` sobre este repo y se pega. No requiere ninguna configuración extra, pero es incómodo para alguien no técnico y el token vence.
+2. **Con la cuenta de GitHub** — botón *Sign In with GitHub*. Cada persona entra con su propia cuenta y los commits quedan a su nombre. Es la opción recomendada para uso cotidiano.
 
-La segunda opción es la recomendada para uso cotidiano: cada persona entra con su propia cuenta y los commits quedan a su nombre.
+El token se guarda en el `localStorage` del navegador, así que la sesión es **por dispositivo**: entrar desde el celular requiere iniciar sesión de nuevo.
+
+### Configurar el login con cuenta de GitHub
+
+GitHub todavía no permite completar un flujo OAuth enteramente desde el navegador, así que hace falta una pieza mínima de servidor que haga el intercambio del código por el token. Se resuelve con un Worker gratuito de Cloudflare — el sitio sigue siendo estático, el Worker vive aparte.
+
+**1. Desplegar el Worker**
+
+Desplegar [sveltia-cms-auth](https://github.com/sveltia/sveltia-cms-auth) en Cloudflare Workers, con el botón de deploy del repo o clonando y corriendo `wrangler deploy`. Anotar la URL que queda, con la forma `https://sveltia-cms-auth.<subdominio>.workers.dev`.
+
+**2. Registrar la OAuth App en GitHub**
+
+En [github.com/settings/applications/new](https://github.com/settings/applications/new):
+
+| Campo | Valor |
+| ----- | ----- |
+| Application name | `Meiri Doll CMS` |
+| Homepage URL | `https://meiridoll.vercel.app` |
+| Authorization callback URL | `<URL_DEL_WORKER>/callback` |
+
+Guardar el **Client ID** y generar un **Client Secret**.
+
+**3. Cargar las variables en el Worker**
+
+En el panel de Cloudflare, en *Settings → Variables* del Worker:
+
+| Variable | Valor |
+| -------- | ----- |
+| `GITHUB_CLIENT_ID` | el Client ID del paso 2 |
+| `GITHUB_CLIENT_SECRET` | el Client Secret — **marcarlo como encriptado** |
+| `ALLOWED_DOMAINS` | `meiridoll.vercel.app` |
+
+`ALLOWED_DOMAINS` es lo que evita que otro sitio use este Worker para autenticarse. Redesplegar después de cargarlas.
+
+**4. Apuntar el CMS al Worker**
+
+En `public/admin/config.yml`, bajo `backend`, descomentar y completar:
+
+```yaml
+base_url: https://sveltia-cms-auth.<subdominio>.workers.dev
+```
+
+**5. Dar acceso a quien va a editar**
+
+Invitarla como colaboradora del repositorio con permiso de escritura, desde *Settings → Collaborators*. Sin eso, aunque el login funcione, no va a poder guardar cambios.
+
+> El Worker solo intercambia el código de OAuth por un token: no guarda contenido, no ve las fotos y no tiene estado. Si se cae, el panel deja de dejar entrar por GitHub pero el sitio publicado sigue intacto.
 
 ### Qué se puede editar
 
