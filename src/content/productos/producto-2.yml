@@ -1,5 +1,9 @@
-name: Próximamente
-description: ''
-images: []
-order: 2
 draft: false
+name: Fairy Top
+description: ''
+images:
+  - /src/assets/productos/271134.jpg
+  - /src/assets/productos/265813.jpg
+tags: []
+price: ''
+order: 2
