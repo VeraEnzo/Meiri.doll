@@ -1,12 +1,19 @@
-draft: true
+draft: false
 name: Fairy Top
-description: ''
+description: |-
+  Remera de encaje elastizado, manga larga y cuello bote. Se adapta al cuerpo y el escote amplio deja los hombros al descubierto — pensada para sentirte etérea.
+
+  Material: 96% Nylon, 4% Elastano
+  El detalle del botón y la puntilla puede cambiar según disponibilidad.
+  Colores disponibles: Vanilla Lace
 images:
   - /src/assets/productos/271134.jpg
   - /src/assets/productos/265813.jpg
   - /src/assets/productos/271208.jpg
   - /src/assets/productos/271176.jpg
 tags:
-  - encaje, elastizada, detalle puntilla
+  - encaje
+  - elastizada
+  - detalle puntilla
 price: $23.000
 order: 2
