@@ -26,7 +26,7 @@ const sizes = '(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw';
 const consulta = linkWhatsappProducto(name);
 ---
 
-<div class="product-card group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-[#f3aebc]/30">
+<div class="product-card group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-[#f3aebc]/30 flex flex-col h-full">
   <!-- Image carousel -->
   <div class="relative overflow-hidden bg-[#fff1b5]/30">
     {images.length > 0 ? (
@@ -85,22 +85,20 @@ const consulta = linkWhatsappProducto(name);
   </div>
 
   <!-- Info -->
-  <div class="p-5">
-    {tags.length > 0 && (
-      <div class="flex flex-wrap gap-1.5 mb-3">
-        {tags.map(tag => (
-          <span class="text-[10px] tracking-widest uppercase bg-[#f3aebc]/30 text-[#9b1734] px-2 py-0.5 rounded-full">
-            {tag}
-          </span>
-        ))}
-      </div>
-    )}
-
+  <div class="p-5 flex flex-col flex-1">
     <div class="flex items-start justify-between gap-2 mb-2">
       <h3 class="font-meiri text-2xl text-[#9b1734]">{name}</h3>
       {price && (
         <span class="font-meiri text-xl text-[#9b1734] whitespace-nowrap">{price}</span>
       )}
+    </div>
+
+    <div class="flex flex-wrap gap-1.5 mb-3 min-h-[46px] content-start">
+      {tags.map(tag => (
+        <span class="text-[10px] leading-4 tracking-widest uppercase bg-[#f3aebc]/30 text-[#9b1734] px-2 py-0.5 rounded-full">
+          {tag}
+        </span>
+      ))}
     </div>
 
     {description && (
@@ -111,7 +109,7 @@ const consulta = linkWhatsappProducto(name);
       href={consulta ?? '#contacto'}
       target={consulta ? '_blank' : undefined}
       rel={consulta ? 'noopener noreferrer' : undefined}
-      class="inline-flex items-center gap-2 bg-[#9b1734] text-[#fff1b5] text-sm px-5 py-2.5 rounded-full hover:bg-[#7a1028] transition-colors w-full justify-center"
+      class="mt-auto inline-flex items-center gap-2 bg-[#9b1734] text-[#fff1b5] text-sm px-5 py-2.5 rounded-full hover:bg-[#7a1028] transition-colors w-full justify-center"
     >
       {consulta ? (
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
