@@ -30,3 +30,18 @@ export const linkWhatsapp = contacto.whatsapp
 export const linkMail = contacto.email
   ? `mailto:${contacto.email}?subject=${encodeURIComponent(ASUNTO_MAIL)}`
   : null;
+
+/**
+ * Link de WhatsApp para consultar por un producto puntual: el nombre viaja en
+ * el mensaje, así se sabe de qué prenda se trata sin tener que preguntarlo.
+ *
+ * Devuelve null si no hay número configurado, para que quien lo use pueda caer
+ * de vuelta en la zona de contacto.
+ */
+export function linkWhatsappProducto(producto: string): string | null {
+  if (!contacto.whatsapp) return null;
+
+  const texto = `¡Hola! Quiero consultar por ${producto} ♡`;
+
+  return `https://wa.me/${contacto.whatsapp}?text=${encodeURIComponent(texto)}`;
+}
