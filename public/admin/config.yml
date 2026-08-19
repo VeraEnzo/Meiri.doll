@@ -12,6 +12,15 @@ backend:
   # Ver "Configurar el login con cuenta de GitHub" en el README.
   base_url: https://sveltia-cms-auth.enzovera646.workers.dev
 
+# El nombre del archivo de cada producto define la URL de su página, así que
+# tiene que ser seguro para una URL. Sin esto, un producto llamado "Camisón
+# Dulce" generaría camisón-dulce.yml y la dirección quedaría con el acento
+# escapado (/productos/camis%C3%B3n-dulce).
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: '-'
+
 # Las fotos van a src/assets/ (no a public/) para que Astro las optimice en el
 # build. Al estar fuera de public/ no tienen URL propia, así que se referencian
 # por su ruta en el repo y el sitio las resuelve con import.meta.glob.
@@ -57,10 +66,10 @@ collections:
         widget: string
 
       - name: description
-        label: Descripción
+        label: Descripción corta
         widget: text
         required: false
-        hint: 'Los saltos de línea se respetan tal cual en la card. Obligatoria para publicar.'
+        hint: 'La que se ve en la card del catálogo. Los saltos de línea se respetan.'
 
       - name: images
         label: Fotos
@@ -83,6 +92,55 @@ collections:
         widget: string
         required: false
         hint: 'Opcional, se muestra tal cual se escribe. Ej: $50.000'
+
+      # --- Solo se ven en la página del producto ---
+      # Todo opcional: la página muestra solo los campos cargados. Un producto
+      # sin estos datos se ve igual que antes, sin huecos.
+      - name: galeria
+        label: Fotos adicionales
+        widget: list
+        required: false
+        hint: 'Se suman a la galería de la página del producto, después de las Fotos. No aparecen en el catálogo. Ideales para detalle de tela, probador o contexto.'
+        field:
+          name: image
+          label: Foto
+          widget: image
+
+      - name: detalle
+        label: Descripción larga
+        widget: text
+        required: false
+        hint: 'Solo se ve en la página del producto. Si se deja vacía, se usa la descripción corta.'
+
+      - name: material
+        label: Material
+        widget: string
+        required: false
+        hint: 'Ej: 96% Nylon, 4% Elastano'
+
+      - name: colores
+        label: Colores disponibles
+        widget: list
+        required: false
+        hint: 'Uno por ítem. Ej: Vanilla Lace, Parfait Pink.'
+
+      - name: talles
+        label: Talles
+        widget: list
+        required: false
+        hint: 'Uno por ítem. Ej: Único, S, M, L.'
+
+      - name: medidas
+        label: Medidas
+        widget: text
+        required: false
+        hint: 'Opcional. Ej: Largo 45 cm · Busto 80-95 cm. Los saltos de línea se respetan.'
+
+      - name: cuidados
+        label: Cuidados
+        widget: text
+        required: false
+        hint: 'Opcional. Ej: Lavar a mano con agua fría. No usar secadora.'
 
       - name: order
         label: Orden

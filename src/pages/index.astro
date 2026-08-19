@@ -18,8 +18,10 @@ const entradas = (await getCollection('productos'))
   .sort((a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name));
 
 const productos = await Promise.all(
-  entradas.map(async ({ data }) => ({
+  entradas.map(async ({ id, data }) => ({
     ...data,
+    // El id es el nombre del archivo, que define la URL de su página.
+    href: `/productos/${id}`,
     images: await Promise.all(data.images.map(ruta => resolverImagen(ruta, data.name))),
   }))
 );
@@ -122,6 +124,7 @@ const productos = await Promise.all(
             name={producto.name}
             description={producto.description}
             images={producto.images}
+            href={producto.href}
             tags={producto.tags}
             price={producto.price}
           />

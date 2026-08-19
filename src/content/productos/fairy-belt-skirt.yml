@@ -2,9 +2,6 @@ draft: false
 name: Fairy Belt Skirt
 description: |-
   Mini falda de encaje elastizado floral, con tiras laterales para ajustar. Ideal para layering — podés usarla como protagonista del look o como detalle sobre tus outfits favoritos.
-
-  Material: 96% Nylon, 4% Elastano
-  Colores disponibles: Vanilla Lace
 images:
   - /src/assets/productos/271213.jpg
   - /src/assets/productos/271208.jpg
@@ -15,3 +12,6 @@ tags:
   - ajustable
 price: $15.000
 order: 3
+material: 96% Nylon, 4% Elastano
+colores:
+  - Vanilla Lace

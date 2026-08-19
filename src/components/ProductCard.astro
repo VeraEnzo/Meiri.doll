@@ -7,11 +7,13 @@ interface Props {
   name: string;
   description: string;
   images: ImageMetadata[];
+  /** URL de la página del producto. La foto y el nombre llevan ahí. */
+  href: string;
   tags?: string[];
   price?: string;
 }
 
-const { name, description, images, tags = [], price } = Astro.props;
+const { name, description, images, href, tags = [], price } = Astro.props;
 
 // La grilla es de hasta 3 columnas dentro de un contenedor de 1024px, así que
 // una card nunca supera ~320px en desktop. En mobile ocupa el ancho completo.
@@ -29,33 +31,37 @@ const consulta = linkWhatsappProducto(name);
 <div class="product-card group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-[#f3aebc]/30 flex flex-col h-full">
   <!-- Image carousel -->
   <div class="relative overflow-hidden bg-[#fff1b5]/30">
-    {images.length > 0 ? (
-      <div class="carousel-track flex transition-transform duration-500 ease-in-out">
-        {images.map((src, i) => (
-          <Image
-            src={src}
-            alt={`${name} - foto ${i + 1}`}
-            widths={anchos}
-            width={anchoMaximo}
-            sizes={sizes}
-            class="w-full flex-shrink-0 object-cover aspect-[3/4] select-none"
-            loading={i === 0 ? 'eager' : 'lazy'}
-            draggable="false"
-          />
-        ))}
-      </div>
-    ) : (
-      <!-- Producto todavía sin fotos: placeholder en vez de un hueco vacío -->
-      <div class="aspect-[3/4] flex flex-col items-center justify-center gap-3">
-        <img src="/assets/svg/doll-bordo.svg" alt="" class="w-14 h-14 opacity-30" />
-        <span class="text-[10px] tracking-widest uppercase text-[#9b1734]/40">
-          foto próximamente
-        </span>
-      </div>
-    )}
+    <a href={href} class="carousel-link block" aria-label={`Ver detalles de ${name}`}>
+      {images.length > 0 ? (
+        <div class="carousel-track flex transition-transform duration-500 ease-in-out">
+          {images.map((src, i) => (
+            <Image
+              src={src}
+              alt={`${name} - foto ${i + 1}`}
+              widths={anchos}
+              width={anchoMaximo}
+              sizes={sizes}
+              class="w-full flex-shrink-0 object-cover aspect-[3/4] select-none"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              draggable="false"
+            />
+          ))}
+        </div>
+      ) : (
+        <!-- Producto todavía sin fotos: placeholder en vez de un hueco vacío -->
+        <div class="aspect-[3/4] flex flex-col items-center justify-center gap-3">
+          <img src="/assets/svg/doll-bordo.svg" alt="" class="w-14 h-14 opacity-30" />
+          <span class="text-[10px] tracking-widest uppercase text-[#9b1734]/40">
+            foto próximamente
+          </span>
+        </div>
+      )}
+    </a>
 
     {images.length > 1 && (
       <>
+        <!-- Los controles van fuera del enlace y posicionados encima, así al
+             tocarlos se pasa de foto en vez de entrar a la página. -->
         <!-- Botones: siempre visibles en mobile, hover en desktop -->
         <button
           class="carousel-prev absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#9b1734] rounded-full w-8 h-8 flex items-center justify-center shadow transition-all md:opacity-0 md:group-hover:opacity-100 opacity-100 text-lg leading-none"
@@ -87,7 +93,9 @@ const consulta = linkWhatsappProducto(name);
   <!-- Info -->
   <div class="p-5 flex flex-col flex-1">
     <div class="flex items-start justify-between gap-2 mb-2">
-      <h3 class="font-meiri text-2xl text-[#9b1734]">{name}</h3>
+      <h3 class="font-meiri text-2xl text-[#9b1734]">
+        <a href={href} class="hover:opacity-60 transition-opacity">{name}</a>
+      </h3>
       {price && (
         <span class="font-meiri text-xl text-[#9b1734] whitespace-nowrap">{price}</span>
       )}
@@ -106,7 +114,7 @@ const consulta = linkWhatsappProducto(name);
     )}
 
     <a
-      href={consulta ?? '#contacto'}
+      href={consulta ?? '/#contacto'}
       target={consulta ? '_blank' : undefined}
       rel={consulta ? 'noopener noreferrer' : undefined}
       class="mt-auto inline-flex items-center gap-2 bg-[#9b1734] text-[#fff1b5] text-sm px-5 py-2.5 rounded-full hover:bg-[#7a1028] transition-colors w-full justify-center"
@@ -151,17 +159,30 @@ const consulta = linkWhatsappProducto(name);
     // Swipe táctil
     let touchStartX = 0;
     let touchEndX = 0;
+    // Las fotos ahora son un enlace a la página del producto, así que un swipe
+    // dispararía también la navegación. Este flag separa "arrastré para cambiar
+    // de foto" de "toqué para entrar".
+    let arrastro = false;
 
     track.addEventListener('touchstart', (e: TouchEvent) => {
       touchStartX = e.changedTouches[0].screenX;
+      arrastro = false;
     }, { passive: true });
 
     track.addEventListener('touchend', (e: TouchEvent) => {
       touchEndX = e.changedTouches[0].screenX;
       const diff = touchStartX - touchEndX;
       if (Math.abs(diff) > 40) {
+        arrastro = true;
         goTo(diff > 0 ? current + 1 : current - 1);
       }
     }, { passive: true });
+
+    card.querySelector('.carousel-link')?.addEventListener('click', (e: Event) => {
+      if (arrastro) {
+        e.preventDefault();
+        arrastro = false;
+      }
+    });
   });
 </script>

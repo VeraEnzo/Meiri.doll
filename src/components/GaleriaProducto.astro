@@ -1,0 +1,408 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  name: string;
+  fotos: ImageMetadata[];
+}
+
+const { name, fotos } = Astro.props;
+
+// Un solo juego de variantes sirve para las dos cosas: la galería la muestra a
+// ~560px (elige 768/1024) y el visor ampliado la pide a 100vw (elige 1440/1920,
+// que es lo que da resolución para hacer zoom).
+const anchos = [480, 768, 1024, 1440, 1920];
+const anchoMaximo = 1920;
+const sizes = '(min-width: 1024px) 560px, (min-width: 640px) 60vw, 100vw';
+---
+
+{fotos.length > 0 ? (
+  <div class="galeria" data-producto={name}>
+    <!-- Foto grande -->
+    <div class="relative rounded-3xl overflow-hidden border border-[#f3aebc]/40 bg-white group">
+      <div class="galeria-track flex transition-transform duration-500 ease-in-out">
+        {fotos.map((foto, i) => (
+          <button
+            class="galeria-abrir w-full flex-shrink-0 block cursor-zoom-in"
+            data-index={i}
+            aria-label={`Ampliar foto ${i + 1} de ${name}`}
+          >
+            <Image
+              src={foto}
+              alt={`${name} - foto ${i + 1}`}
+              widths={anchos}
+              width={anchoMaximo}
+              sizes={sizes}
+              class="w-full object-cover aspect-[3/4] select-none"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              draggable="false"
+            />
+          </button>
+        ))}
+      </div>
+
+      {fotos.length > 1 && (
+        <>
+          <button
+            class="galeria-prev absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#9b1734] rounded-full w-9 h-9 flex items-center justify-center shadow transition-all md:opacity-0 md:group-hover:opacity-100 opacity-100 text-xl leading-none"
+            aria-label="Foto anterior"
+          >
+            &lsaquo;
+          </button>
+          <button
+            class="galeria-next absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#9b1734] rounded-full w-9 h-9 flex items-center justify-center shadow transition-all md:opacity-0 md:group-hover:opacity-100 opacity-100 text-xl leading-none"
+            aria-label="Siguiente foto"
+          >
+            &rsaquo;
+          </button>
+
+          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {fotos.map((_, i) => (
+              <span class={`galeria-dot w-1.5 h-1.5 rounded-full transition-all ${i === 0 ? 'bg-[#9b1734] w-4' : 'bg-[#9b1734]/40'}`} />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+
+    <!-- Miniaturas: solo mueven el carrusel, no reemplazan la foto -->
+    {fotos.length > 1 && (
+      <div class="grid grid-cols-4 gap-3 mt-3">
+        {fotos.map((foto, i) => (
+          <button
+            class="galeria-miniatura rounded-2xl overflow-hidden border-2 border-transparent transition-colors"
+            data-index={i}
+            aria-label={`Ver foto ${i + 1}`}
+          >
+            <Image
+              src={foto}
+              alt=""
+              widths={[120, 240]}
+              width={240}
+              sizes="120px"
+              class="w-full object-cover aspect-square"
+              loading="lazy"
+            />
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+) : (
+  <div class="rounded-3xl border border-[#f3aebc]/40 bg-white aspect-[3/4] flex flex-col items-center justify-center gap-3">
+    <img src="/assets/svg/doll-bordo.svg" alt="" class="w-16 h-16 opacity-30" />
+    <span class="text-[10px] tracking-widest uppercase text-[#9b1734]/40">
+      foto próximamente
+    </span>
+  </div>
+)}
+
+<!-- Visor ampliado -->
+<div
+  id="visor"
+  class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center overflow-hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Foto ampliada"
+>
+  <img
+    id="visor-foto"
+    src=""
+    alt=""
+    sizes="100vw"
+    class="max-w-full max-h-screen object-contain cursor-zoom-in touch-none select-none"
+    draggable="false"
+  />
+
+  <button
+    id="visor-cerrar"
+    class="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 text-white text-2xl leading-none flex items-center justify-center transition-colors"
+    aria-label="Cerrar"
+  >
+    &times;
+  </button>
+
+  <div class="absolute top-4 left-4 flex gap-2">
+    <button
+      id="visor-alejar"
+      class="w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 text-white text-xl leading-none flex items-center justify-center transition-colors"
+      aria-label="Alejar"
+    >
+      &minus;
+    </button>
+    <button
+      id="visor-acercar"
+      class="w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 text-white text-xl leading-none flex items-center justify-center transition-colors"
+      aria-label="Acercar"
+    >
+      +
+    </button>
+    <span
+      id="visor-nivel"
+      class="h-11 px-3 rounded-full bg-white/10 text-white/70 text-xs flex items-center tabular-nums"
+    >
+      100%
+    </span>
+  </div>
+
+  <button
+    id="visor-prev"
+    class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 text-white text-2xl leading-none flex items-center justify-center transition-colors"
+    aria-label="Foto anterior"
+  >
+    &lsaquo;
+  </button>
+  <button
+    id="visor-next"
+    class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/15 hover:bg-white/30 text-white text-2xl leading-none flex items-center justify-center transition-colors"
+    aria-label="Siguiente foto"
+  >
+    &rsaquo;
+  </button>
+
+  <p id="visor-ayuda" class="absolute bottom-5 left-1/2 -translate-x-1/2 text-white/50 text-xs tracking-wide text-center px-4">
+    clic o rueda del mouse para acercar
+  </p>
+</div>
+
+<script>
+  const galeria = document.querySelector('.galeria') as HTMLElement | null;
+
+  if (galeria) {
+    const track = galeria.querySelector('.galeria-track') as HTMLElement;
+    const slides = Array.from(galeria.querySelectorAll('.galeria-abrir')) as HTMLElement[];
+    const dots = Array.from(galeria.querySelectorAll('.galeria-dot')) as HTMLElement[];
+    const miniaturas = Array.from(galeria.querySelectorAll('.galeria-miniatura')) as HTMLElement[];
+    const total = slides.length;
+    let actual = 0;
+
+    function mostrar(indice: number) {
+      actual = (indice + total) % total;
+      track.style.transform = `translateX(-${actual * 100}%)`;
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('bg-[#9b1734]', i === actual);
+        dot.classList.toggle('w-4', i === actual);
+        dot.classList.toggle('bg-[#9b1734]/40', i !== actual);
+        dot.classList.toggle('w-1.5', i !== actual);
+      });
+
+      miniaturas.forEach((mini, i) => {
+        mini.classList.toggle('border-[#9b1734]', i === actual);
+        mini.classList.toggle('border-transparent', i !== actual);
+      });
+    }
+
+    galeria.querySelector('.galeria-prev')?.addEventListener('click', () => mostrar(actual - 1));
+    galeria.querySelector('.galeria-next')?.addEventListener('click', () => mostrar(actual + 1));
+    miniaturas.forEach((mini, i) => mini.addEventListener('click', () => mostrar(i)));
+
+    // Swipe en la foto grande. Hay que distinguir el arrastre del toque,
+    // porque el toque abre el visor.
+    let inicioX = 0;
+    let arrastroCarrusel = false;
+
+    track.addEventListener('touchstart', (e: TouchEvent) => {
+      inicioX = e.changedTouches[0].screenX;
+      arrastroCarrusel = false;
+    }, { passive: true });
+
+    track.addEventListener('touchend', (e: TouchEvent) => {
+      const diff = inicioX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 40) {
+        arrastroCarrusel = true;
+        mostrar(diff > 0 ? actual + 1 : actual - 1);
+      }
+    }, { passive: true });
+
+    // ---------------- Visor ampliado ----------------
+    const visor = document.getElementById('visor') as HTMLElement;
+    const foto = document.getElementById('visor-foto') as HTMLImageElement;
+    const ayuda = document.getElementById('visor-ayuda') as HTMLElement;
+    const nivel = document.getElementById('visor-nivel') as HTMLElement;
+
+    const MIN = 1;
+    const MAX = 4;
+
+    let escala = 1;
+    let x = 0;
+    let y = 0;
+    let arrastrando = false;
+    let movio = false;
+    let desdeX = 0;
+    let desdeY = 0;
+
+    function pintar() {
+      // El orden importa: con `translate` antes de `scale`, el desplazamiento
+      // queda en píxeles de pantalla y el arrastre acompaña 1 a 1 al cursor.
+      foto.style.transform = `translate(${x}px, ${y}px) scale(${escala})`;
+
+      const ampliada = escala > 1.01;
+      foto.classList.toggle('cursor-zoom-in', !ampliada);
+      foto.classList.toggle('cursor-grab', ampliada && !arrastrando);
+      foto.classList.toggle('cursor-grabbing', ampliada && arrastrando);
+
+      nivel.textContent = Math.round(escala * 100) + '%';
+      ayuda.textContent = ampliada
+        ? 'arrastrá para moverte · rueda del mouse para ajustar · clic para volver'
+        : 'clic o rueda del mouse para acercar';
+    }
+
+    // Freno para que la foto no se despegue de la pantalla: el corrimiento
+    // máximo es justo el excedente que genera la escala.
+    function limitar() {
+      const maxX = (foto.clientWidth * (escala - 1)) / 2;
+      const maxY = (foto.clientHeight * (escala - 1)) / 2;
+      x = Math.max(-maxX, Math.min(maxX, x));
+      y = Math.max(-maxY, Math.min(maxY, y));
+    }
+
+    // Posición del cursor respecto del centro sin transformar de la imagen.
+    // El rect que devuelve el navegador ya viene transformado, así que hay que
+    // descontarle el desplazamiento actual.
+    function respectoDelCentro(clientX: number, clientY: number) {
+      const r = foto.getBoundingClientRect();
+      return {
+        cx: clientX - (r.left + r.width / 2 - x),
+        cy: clientY - (r.top + r.height / 2 - y),
+      };
+    }
+
+    // Cambia la escala manteniendo quieto el punto que está bajo el cursor:
+    // es lo que hace que el zoom se sienta controlado en vez de saltar.
+    function ajustarZoom(objetivo: number, clientX?: number, clientY?: number) {
+      const anterior = escala;
+      const nueva = Math.max(MIN, Math.min(MAX, objetivo));
+      if (Math.abs(nueva - anterior) < 0.001) return;
+
+      if (clientX !== undefined && clientY !== undefined) {
+        const { cx, cy } = respectoDelCentro(clientX, clientY);
+        const u = (cx - x) / anterior;
+        const v = (cy - y) / anterior;
+        escala = nueva;
+        x = cx - nueva * u;
+        y = cy - nueva * v;
+      } else {
+        escala = nueva;
+      }
+
+      if (escala <= 1.01) {
+        escala = 1;
+        x = 0;
+        y = 0;
+      }
+
+      limitar();
+      pintar();
+    }
+
+    function cargar(indice: number) {
+      const img = slides[indice].querySelector('img') as HTMLImageElement;
+      foto.src = img.currentSrc || img.src;
+      foto.srcset = img.srcset;
+      foto.alt = img.alt;
+      escala = 1;
+      x = 0;
+      y = 0;
+      pintar();
+    }
+
+    function abrir(indice: number) {
+      mostrar(indice);
+      cargar(indice);
+      visor.classList.remove('hidden');
+      visor.classList.add('flex');
+      // Sin esto el fondo sigue scrolleando detrás del visor.
+      document.body.style.overflow = 'hidden';
+    }
+
+    function cerrar() {
+      visor.classList.add('hidden');
+      visor.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    slides.forEach((slide, i) => {
+      slide.addEventListener('click', () => {
+        // Si el dedo arrastró para cambiar de foto, no abrir el visor.
+        if (arrastroCarrusel) {
+          arrastroCarrusel = false;
+          return;
+        }
+        abrir(i);
+      });
+    });
+
+    document.getElementById('visor-cerrar')?.addEventListener('click', cerrar);
+    document.getElementById('visor-prev')?.addEventListener('click', () => { mostrar(actual - 1); cargar(actual); });
+    document.getElementById('visor-next')?.addEventListener('click', () => { mostrar(actual + 1); cargar(actual); });
+    document.getElementById('visor-acercar')?.addEventListener('click', () => ajustarZoom(escala + 0.5));
+    document.getElementById('visor-alejar')?.addEventListener('click', () => ajustarZoom(escala - 0.5));
+
+    // Clic en el fondo cierra.
+    visor.addEventListener('click', (e: MouseEvent) => {
+      if (e.target === visor) cerrar();
+    });
+
+    // Rueda del mouse: la forma natural de hacer zoom en escritorio.
+    foto.addEventListener('wheel', (e: WheelEvent) => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.2 : 1 / 1.2;
+      ajustarZoom(escala * factor, e.clientX, e.clientY);
+    }, { passive: false });
+
+    foto.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (escala <= 1) return;
+      arrastrando = true;
+      movio = false;
+      desdeX = e.clientX;
+      desdeY = e.clientY;
+      foto.setPointerCapture(e.pointerId);
+      pintar();
+    });
+
+    foto.addEventListener('pointermove', (e: PointerEvent) => {
+      if (!arrastrando) return;
+      const dx = e.clientX - desdeX;
+      const dy = e.clientY - desdeY;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) movio = true;
+      x += dx;
+      y += dy;
+      desdeX = e.clientX;
+      desdeY = e.clientY;
+      limitar();
+      pintar();
+    });
+
+    function terminarArrastre() {
+      arrastrando = false;
+      pintar();
+    }
+
+    foto.addEventListener('pointerup', terminarArrastre);
+    foto.addEventListener('pointercancel', terminarArrastre);
+
+    // El clic alterna el zoom, pero solo si fue un clic de verdad: si el
+    // puntero se movió, era un arrastre y no hay que tocar la escala.
+    foto.addEventListener('click', (e: MouseEvent) => {
+      if (movio) {
+        movio = false;
+        return;
+      }
+      ajustarZoom(escala > 1 ? 1 : 2.5, e.clientX, e.clientY);
+    });
+
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (visor.classList.contains('hidden')) return;
+      if (e.key === 'Escape') cerrar();
+      if (e.key === 'ArrowLeft') { mostrar(actual - 1); cargar(actual); }
+      if (e.key === 'ArrowRight') { mostrar(actual + 1); cargar(actual); }
+      if (e.key === '+' || e.key === '=') ajustarZoom(escala + 0.5);
+      if (e.key === '-') ajustarZoom(escala - 0.5);
+      if (e.key === '0') ajustarZoom(1);
+    });
+
+    mostrar(0);
+  }
+</script>

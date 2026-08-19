@@ -1,10 +1,9 @@
+draft: false
 name: Princess Hoodie
 description: |-
   Campera con manga globo y cierre delantero. Hecho en frisa invisible — pensada para sentirte linda y calentita al mismo tiempo.
 
-  Material: 80% Algodón, 20% Polyester
   El detalle de los botones y cierre puede cambiar según disponibilidad.
-  Colores disponibles: Parfait Pink
 images:
   - /src/assets/productos/princess-hoodie-3.jpg
   - /src/assets/productos/princess-hoodie-4.jpg
@@ -16,3 +15,6 @@ tags:
   - detalle botones
 price: $50.000
 order: 1
+material: 80% Algodón, 20% Polyester
+colores:
+  - Parfait Pink

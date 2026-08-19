@@ -1,0 +1,149 @@
+---
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import GaleriaProducto from '../../components/GaleriaProducto.astro';
+import WhatsappFlotante from '../../components/WhatsappFlotante.astro';
+import { resolverImagen } from '../../lib/imagenes';
+import { linkWhatsappProducto } from '../../lib/contacto';
+
+// Una página por producto publicado. Los borradores quedan afuera: si no
+// filtráramos acá, seguirían siendo accesibles por URL aunque no aparezcan en
+// la grilla del catálogo.
+export async function getStaticPaths() {
+  const productos = (await getCollection('productos')).filter(({ data }) => !data.draft);
+
+  return productos.map(({ id, data }) => ({
+    params: { slug: id },
+    props: { data },
+  }));
+}
+
+const { data } = Astro.props;
+const { name, description, images, tags = [], price } = data;
+const { galeria, detalle, material, colores = [], talles = [], medidas, cuidados } = data;
+
+// La galería de la página son las fotos de la card más las adicionales, en ese
+// orden: la primera sigue siendo la portada del producto.
+const rutas = [...images, ...galeria];
+const fotos = await Promise.all(rutas.map(ruta => resolverImagen(ruta, name)));
+
+const consulta = linkWhatsappProducto(name);
+
+// La tarjeta que se ve al compartir el link por WhatsApp usa la primera foto.
+const portada = fotos[0]
+  ? (await getImage({ src: fotos[0], width: 1200, format: 'jpeg' })).src
+  : undefined;
+
+// La descripción de la card es corta; el detalle es el texto largo de la
+// página. Si no hay detalle cargado, se usa la descripción.
+const textoLargo = detalle?.trim() ? detalle : description;
+
+const ficha = [
+  { etiqueta: 'Material', valor: material },
+  { etiqueta: 'Colores', valor: colores.length ? colores.join(' · ') : undefined },
+  { etiqueta: 'Talles', valor: talles.length ? talles.join(' · ') : undefined },
+].filter(fila => fila.valor);
+
+const resumen = description
+  ? description.split('\n')[0].slice(0, 155)
+  : `${name} — Meiri Doll, indumentaria femenina de Rosario.`;
+---
+
+<Layout title={`${name} — meiri doll`} description={resumen} image={portada}>
+  <Header />
+
+  <main class="bg-[#fffaf0] py-10 px-6 min-h-screen">
+    <div class="max-w-5xl mx-auto">
+
+      <a
+        href="/#coleccion"
+        class="inline-flex items-center gap-2 text-sm text-[#9b1734]/60 hover:text-[#9b1734] transition-colors mb-8"
+      >
+        &lsaquo; volver al catálogo
+      </a>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+
+        <!-- Galería: carrusel + visor ampliado con zoom -->
+        <div>
+          <GaleriaProducto name={name} fotos={fotos} />
+        </div>
+
+        <!-- Datos -->
+        <div class="lg:pt-2">
+          {tags.length > 0 && (
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              {tags.map(tag => (
+                <span class="text-[10px] leading-4 tracking-widest uppercase bg-[#f3aebc]/30 text-[#9b1734] px-2 py-0.5 rounded-full">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <h1 class="font-meiri text-5xl text-[#9b1734] leading-none mb-3">{name}</h1>
+
+          {price && (
+            <p class="font-meiri text-3xl text-[#9b1734] mb-6">{price}</p>
+          )}
+
+          {textoLargo && (
+            <p class="text-[#9b1734]/75 text-base leading-relaxed whitespace-pre-line mb-8">
+              {textoLargo}
+            </p>
+          )}
+
+          {ficha.length > 0 && (
+            <dl class="border-t border-[#f3aebc]/50 mb-8">
+              {ficha.map(fila => (
+                <div class="flex gap-4 py-3 border-b border-[#f3aebc]/50">
+                  <dt class="text-xs tracking-widest uppercase text-[#9b1734]/50 w-28 shrink-0 pt-0.5">
+                    {fila.etiqueta}
+                  </dt>
+                  <dd class="text-sm text-[#9b1734]/80">{fila.valor}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+
+          {medidas && (
+            <div class="mb-8">
+              <h2 class="text-xs tracking-widest uppercase text-[#9b1734]/50 mb-2">Medidas</h2>
+              <p class="text-sm text-[#9b1734]/80 leading-relaxed whitespace-pre-line">{medidas}</p>
+            </div>
+          )}
+
+          {cuidados && (
+            <div class="mb-8">
+              <h2 class="text-xs tracking-widest uppercase text-[#9b1734]/50 mb-2">Cuidados</h2>
+              <p class="text-sm text-[#9b1734]/80 leading-relaxed whitespace-pre-line">{cuidados}</p>
+            </div>
+          )}
+
+          <a
+            href={consulta ?? '/#contacto'}
+            target={consulta ? '_blank' : undefined}
+            rel={consulta ? 'noopener noreferrer' : undefined}
+            class="inline-flex items-center gap-2 bg-[#9b1734] text-[#fff1b5] text-sm px-7 py-3.5 rounded-full hover:bg-[#7a1028] transition-colors w-full justify-center shadow-lg"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.347-.347.52-.52.174-.174.232-.298.347-.497.115-.198.057-.371-.058-.52-.115-.148-.669-1.611-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+              <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.892c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.738.943 3.694 1.44 5.687 1.442h.005c6.581 0 11.94-5.335 11.943-11.893a11.82 11.82 0 0 0-3.45-8.448zm-8.475 18.29h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.816 9.816 0 0 1-1.5-5.23c.002-5.45 4.457-9.884 9.933-9.884a9.86 9.86 0 0 1 7.019 2.906 9.78 9.78 0 0 1 2.909 6.99c-.003 5.45-4.458 9.885-9.988 9.885z"/>
+            </svg>
+            consultar por este producto
+          </a>
+
+          <p class="text-xs text-[#9b1734]/40 text-center mt-4 tracking-wide">
+            respondemos por WhatsApp e Instagram · envíos a todo el país
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+  <WhatsappFlotante />
+</Layout>
