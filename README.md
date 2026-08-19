@@ -29,7 +29,7 @@ Meiri Doll es una marca de indumentaria femenina de Rosario, Santa Fe, Argentina
 
 ## Propósito del sitio
 
-El sitio funciona como **catálogo vitrina** — los productos se muestran pero no se compran directamente. Cuando una clienta quiere adquirir algo, el botón "consultar" la dirige a Instagram para hablar con la tienda.
+El sitio funciona como **catálogo vitrina** — los productos se muestran pero no se compran directamente. Cuando una clienta quiere adquirir algo, el botón "consultar" la lleva a la zona de contacto, desde donde puede escribir por WhatsApp o Instagram.
 
 Esto permite mantener la atención personalizada que caracteriza a la marca, sin la complejidad de un e-commerce completo.
 
@@ -46,7 +46,7 @@ Esto permite mantener la atención personalizada que caracteriza a la marca, sin
 
 El sitio genera HTML estático en build, lo que lo hace extremadamente rápido y deployable gratis sin necesidad de servidor. Está desplegado en **Vercel** — ver [Despliegue](#despliegue).
 
-> **No hay backend ni base de datos.** Todo el contenido (productos, textos, precios) vive en archivos del repositorio y se resuelve en tiempo de build. No hay API, ni servidor Node corriendo, ni Postgres. El [panel de administración](#panel-de-administración) tampoco es una excepción: en vez de escribir en una base de datos, commitea al repo. Las consultas de las clientas se manejan por Instagram, fuera del sitio.
+> **No hay backend ni base de datos.** Todo el contenido (productos, textos, precios) vive en archivos del repositorio y se resuelve en tiempo de build. No hay API, ni servidor Node corriendo, ni Postgres. El [panel de administración](#panel-de-administración) tampoco es una excepción: en vez de escribir en una base de datos, commitea al repo. Las consultas de las clientas se manejan por WhatsApp e Instagram, fuera del sitio.
 
 ---
 
@@ -68,7 +68,8 @@ website/
 │   ├── components/
 │   │   ├── Header.astro              # Navegación sticky
 │   │   ├── ProductCard.astro         # Card con carrusel de fotos
-│   │   ├── ContactSection.astro      # CTA hacia Instagram
+│   │   ├── ContactSection.astro      # WhatsApp, Instagram, TikTok y mail
+│   │   ├── WhatsappFlotante.astro    # Botón flotante abajo a la derecha
 │   │   └── Footer.astro
 │   ├── content/
 │   │   └── productos/                # Un archivo YAML por producto
@@ -76,6 +77,7 @@ website/
 │   ├── layouts/
 │   │   └── Layout.astro              # Layout base con meta tags
 │   ├── lib/
+│   │   ├── contacto.ts               # Teléfono, mail y redes en un solo lugar
 │   │   └── imagenes.ts               # Resuelve las rutas de fotos del YAML
 │   ├── pages/
 │   │   └── index.astro               # Página principal (hero + catálogo + contacto)
@@ -299,6 +301,36 @@ Consecuencia práctica: **las rutas del YAML tienen que coincidir exactamente co
 
 ---
 
+---
+
+## Datos de contacto
+
+El teléfono, el mail y las redes viven en un solo archivo: `src/lib/contacto.ts`. Los usan la zona de contacto, el botón flotante de WhatsApp y el footer, así que **se cambian en un solo lugar**.
+
+```ts
+export const contacto = {
+  instagram: 'https://www.instagram.com/meiri.doll/',
+  tiktok: 'https://www.tiktok.com/@meiri.doll',
+  whatsapp: '5493413198698',  // internacional, solo dígitos
+  email: 'meiridoll.contacto@gmail.com',
+};
+```
+
+**El número de WhatsApp va en formato internacional y solo con dígitos**, sin `+`, sin espacios y sin guiones — es lo que espera `wa.me`. Para un celular de Rosario: `54` + `9` + `341` + número, sin el `0` inicial y sin el `15`.
+
+Si `whatsapp` o `email` quedan vacíos, **esos accesos simplemente no se renderizan**: desaparecen el botón flotante, el botón de WhatsApp y el link de mail, y los textos se ajustan para mencionar solo Instagram. Es a propósito, para que nunca se publique un enlace a un número equivocado ni un `mailto:` vacío.
+
+### Botón flotante de WhatsApp
+
+Está fijo abajo a la derecha, en bordó con el ícono de WhatsApp. Arranca oculto y **aparece con un fade a los 300px de scroll**, para no competir con el hero. Mientras está oculto usa `invisible`, no solo `opacity-0`, así tampoco se puede enfocar con el teclado mientras no se ve.
+
+Al abrirlo lleva un mensaje ya escrito (`¡Hola! Me interesa una prenda de Meiri Doll ♡`) para que se sepa de dónde viene la consulta. Se cambia en la constante `MENSAJE_WHATSAPP` del mismo archivo.
+
+---
+
 ## Contacto
 
-Instagram: [@meiri.doll](https://www.instagram.com/meiri.doll/)
+- WhatsApp: [+54 9 341 319-8698](https://wa.me/5493413198698)
+- Instagram: [@meiri.doll](https://www.instagram.com/meiri.doll/)
+- TikTok: [@meiri.doll](https://www.tiktok.com/@meiri.doll)
+- Mail: [meiridoll.contacto@gmail.com](mailto:meiridoll.contacto@gmail.com)
