@@ -1,4 +1,12 @@
 ---
+import { contacto } from '../lib/contacto';
+
+// Crédito del desarrollo. Por ahora apunta al perfil de GitHub; cuando exista
+// el portfolio, se cambia solo esta línea.
+const autor = {
+  nombre: 'Enzo Vera',
+  url: 'https://github.com/VeraEnzo',
+};
 ---
 
 <footer class="bg-[#fff1b5] border-t border-[#9b1734]/20 py-10 px-6 text-center">
@@ -8,11 +16,23 @@
   <p class="font-meiri text-2xl text-[#9b1734] mb-1">meiri doll</p>
   <p class="text-xs text-[#9b1734]/50 tracking-widest uppercase">indumentaria femenina · rosario, santa fe</p>
   <a
-    href="https://www.instagram.com/meiri.doll/"
+    href={contacto.instagram}
     target="_blank"
     rel="noopener noreferrer"
     class="inline-block mt-4 text-xs text-[#9b1734]/60 hover:text-[#9b1734] transition-colors"
   >
-    @meiri.doll
+    {contacto.instagramUsuario}
   </a>
+
+  <p class="mt-8 text-[11px] text-[#9b1734]/40 tracking-wide">
+    sitio hecho por
+    <a
+      href={autor.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-[#9b1734]/60 hover:text-[#9b1734] underline underline-offset-2 decoration-[#9b1734]/25 hover:decoration-[#9b1734]/60 transition-colors"
+    >
+      {autor.nombre}
+    </a>
+  </p>
 </footer>
