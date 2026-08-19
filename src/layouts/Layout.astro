@@ -4,12 +4,20 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  /** Imagen para la tarjeta que se ve al compartir el link (WhatsApp, Instagram). */
+  image?: string;
 }
 
 const {
   title = 'meiri doll',
   description = 'Indumentaria femenina argentina con estética shoujo y coquette, inspirada en la moda asiática.',
+  image = '/assets/logos/logo-rose-bordo-bg.png',
 } = Astro.props;
+
+// Open Graph exige URLs absolutas: los links relativos no le sirven a WhatsApp
+// ni a Instagram para armar la vista previa. `Astro.site` sale de astro.config.
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const imagenAbsoluta = new URL(image, Astro.site);
 ---
 
 <!doctype html>
@@ -20,7 +28,21 @@ const {
     <meta name="description" content={description} />
     <meta name="theme-color" content="#fff1b5" />
     <link rel="icon" type="image/svg+xml" href="/assets/simbolo/boton.svg" />
+    <link rel="canonical" href={canonical} />
     <title>{title}</title>
+
+    <!-- Vista previa al compartir el link -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="meiri doll" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imagenAbsoluta} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imagenAbsoluta} />
   </head>
   <body>
     <slot />
